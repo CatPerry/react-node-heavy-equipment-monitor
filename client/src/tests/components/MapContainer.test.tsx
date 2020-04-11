@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import MapContainer from './components/MapContainer';
+import MapContainer from '../../components/MapContainer';
 
 it('MapContainer renders', () => {
   const wrapper = shallow(<MapContainer />);

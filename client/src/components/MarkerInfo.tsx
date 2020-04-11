@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 import { InfoWindow, Marker } from '@react-google-maps/api';
 
-class MarkerInfo extends Component {
+import * as Models from '../models/index';
+
+interface State {
+  data: Models.MachineData[],
+  showInfoWindow: string,
+}
+
+class MarkerInfo extends Component<State> {
   state = {
     data: [],
     showInfoWindow: ''
@@ -15,37 +22,33 @@ class MarkerInfo extends Component {
     }, 10000);
   }
 
-  fetchMachineData = async () => {
+  fetchMachineData = async (): Promise<void> => {
     const response = await fetch('/machines');
     return response.json();
   };
 
-  showInfoWindow = (machineId) => {
+  showInfoWindow = (machineId: number): void => {
     this.setState({ showInfoWindow: machineId });
   };
 
-  isMachineInBounds = (isInBounds) => {
-    if (!isInBounds) {
-      return 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
-    } else {
-      return 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
-    }
+  isMachineInBounds = (isInBounds: boolean): string => {
+    const iconColor = isInBounds ? 'blue-dot.png' : 'yellow-dot.png'
+    return `http://maps.google.com/mapfiles/ms/icons/${iconColor}`;
   };
 
   render() {
     return (
       <div className='Equipment'>
-      {this.state.data.map((machine) => {
+      {this.state.data.map((machine: Models.MachineData) => {
         return (
           <Marker
-            className='Equipment__Marker'
             key={machine.id}
             position={{ lat: machine.location.latitude, lng: machine.location.longitude }}
             onClick={() => this.showInfoWindow(machine.id)}
-            title={`Serial #${machine.serial_number}`}
-            icon={this.isMachineInBounds(machine.in_bounds)}
+            title={`Serial #${machine.serial_number}\nIn bounds: ${machine.metrics.in_bounds.toString()}`}
+            icon={this.isMachineInBounds(machine.metrics.in_bounds)}
           >
-            {this.state.showInfoWindow === machine.id &&
+            {parseInt(this.state.showInfoWindow, 10) === machine.id &&
               <InfoWindow position={{ lat: machine.location.latitude, lng: machine.location.longitude }}>
                 <div style={{ width: '200px', height: '100%', textAlign: 'left', fontSize: '16px' }}>
                   <ul style={{ listStyleType: 'none', listStylePosition: 'outside', paddingInlineStart: '5px' }}>
@@ -74,4 +77,4 @@ class MarkerInfo extends Component {
   }     
 }
 
-export default MarkerInfo
+export default MarkerInfo;
