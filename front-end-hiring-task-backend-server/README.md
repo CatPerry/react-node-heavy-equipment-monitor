@@ -1,7 +1,3 @@
-# Front-End Hiring Task backend server
-
- A RESTful API for the corrux Front-End Hiring Task
-
 ## dependancies
 
 * Node
